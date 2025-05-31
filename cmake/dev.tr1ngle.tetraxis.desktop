@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tetraxis
+Exec=tetraxis
+Icon=dev.tr1ngle.tetraxis
+Categories=Utility;
+Comment=4D Model Editor
+Terminal=false

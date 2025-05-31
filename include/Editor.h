@@ -1,17 +1,18 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <GLFW/glfw3.h>
-#include <filesystem>
-#include <thread>
-#include <glm/glm.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <basicIncludes.h>
+#include <Shader.h>
+#include <Texture.h>
+#include <QuadRenderer.h>
+//#include <qsvgrenderer.h>
 
 class Editor
 {
 private:
+	Shader* testShader;
+	Texture* tex;
+	//Texture svgTex;
+	//QSvgRenderer svgRenderer{};
 
 public:
 	Editor(int argc, const char* argv[]);

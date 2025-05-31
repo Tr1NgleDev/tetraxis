@@ -1,20 +1,19 @@
-#include <iostream>
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <filesystem>
-#include <thread>
-
-#include <glm/glm.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <cstdint>
+#include <basicIncludes.h>
 
 #include <Editor.h>
 
+#ifdef _WIN32
+extern "C"
+{
+	_declspec(dllexport) int NvOptimusEnablement = 1;
+	_declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
 GLFWwindow* window = nullptr;
 Editor* editor = nullptr;
-std::atomic<bool> renderWindowResized = true;
+//std::atomic<bool> renderWindowResized = true;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -38,7 +37,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 }
 void windowResizeCallback(GLFWwindow* window, int width, int height)
 {
-	renderWindowResized = true;
+	//renderWindowResized = true;
+	editor->updateSize(window);
+	editor->render(window, 0.0);
+	glfwSwapBuffers(window);
 }
 void fileDropCallback(GLFWwindow* window, int count, const char* paths[])
 {
@@ -53,17 +55,22 @@ int main(int argc, const char* argv[])
 		return 1;
 	}
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
-#endif
+//#ifdef __APPLE__ // i would like to use gl 4.5 for this
+//	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
+//#endif
 	const char* sessionType = std::getenv("XDG_SESSION_TYPE");
 	if (sessionType && std::string(sessionType) == "wayland")
-		glfwWindowHintString(GLFW_WAYLAND_APP_ID, "tr1ngledev.tetraxis");
+		glfwWindowHintString(GLFW_WAYLAND_APP_ID, "dev.tr1ngle.tetraxis");
 
 	window = glfwCreateWindow(1280, 720, "Tetraxis", nullptr, nullptr);
+	if (!window)
+	{
+		printf("Failed to initialize the window!\n");
+		return 2;
+	}
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 
@@ -82,16 +89,16 @@ int main(int argc, const char* argv[])
 	editor = new Editor(argc, argv);
 	glfwSetWindowUserPointer(window, editor);
 
-	std::atomic<bool> renderThreadStop = false;
-	std::thread renderThread(
-		[&renderThreadStop, &argc, &argv]()
+	/*std::thread renderThread(
+		[&argc, &argv]() -> void
 		{
 			glfwMakeContextCurrent(window);
 			glewExperimental = true;
 			if (glewInit())
 			{
 				printf("Failed to initialize GLEW!\n");
-				return 2;
+				glfwSetWindowShouldClose(window, true);
+				return;
 			}
 			
 			glfwSwapInterval(1);
@@ -100,7 +107,7 @@ int main(int argc, const char* argv[])
 			editor->updateSize(window);
 
 			double lastTime = glfwGetTime() - 0.01;
-			while (!renderThreadStop)
+			while (true)
 			{
 				double time = glfwGetTime();
 				double dt = glm::min(time - lastTime, 1.0 / 10.0);
@@ -115,13 +122,29 @@ int main(int argc, const char* argv[])
 				editor->render(window, dt);
 
 				glfwSwapBuffers(window);
+
+				if (glfwWindowShouldClose(window))
+					break;
 			}
-			renderThreadStop = false;
 		});
-	renderThread.detach();
+	renderThread.detach();*/
+
+	glfwMakeContextCurrent(window);
+	glewExperimental = true;
+	if (glewInit())
+	{
+		printf("Failed to initialize GLEW!\n");
+		glfwSetWindowShouldClose(window, true);
+		return 3;
+	}
+
+	glfwSwapInterval(1);
+
+	editor->initRender(window);
+	editor->updateSize(window);
 
 	double lastTime = glfwGetTime() - 0.01;
-	while (!glfwWindowShouldClose(window))
+	while (true)
 	{
 		double time = glfwGetTime();
 		double dt = glm::min(time - lastTime, 1.0 / 10.0);
@@ -130,14 +153,22 @@ int main(int argc, const char* argv[])
 		glfwPollEvents();
 
 		editor->update(window, dt);
+
+		editor->render(window, dt);
+
+		glfwSwapBuffers(window);
+
+		if (glfwWindowShouldClose(window))
+			break;
 	}
 
-	renderThreadStop = true;
-	while (renderThreadStop);
+	//if (renderThread.joinable())
+	//	renderThread.join();
 	
 	delete editor;
 
 	glfwDestroyWindow(window);
+	glfwTerminate();
 
 	return 0;
 }
