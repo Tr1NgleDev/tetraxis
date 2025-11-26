@@ -13,11 +13,12 @@ public:
 private:
 	uint32_t ID = 0;
 	GLenum target = 0;
+	std::string name = "";
+	std::array<int, 5> size{ 1 };
 
 	// [channels, type] -> [internalFormat, format, type] LUT
 	static const std::unordered_map<ChannelsFormat, Format> formatsTable;
 	static std::unordered_map<std::string, Texture*> textures;
-	static std::unordered_map<std::string, std::array<int, 5>> textureSizes;
 public:
 	Texture() { }
 	
@@ -78,6 +79,8 @@ public:
 	static bool load(const std::string& path, uint8_t desiredChannels = 0, bool linearFilter = false, const std::string& name = "", bool reload = false);
 	static bool loadArray(const std::string& path, int cols, int rows, uint8_t desiredChannels = 0, bool linearFilter = false, const std::string& name = "", bool reload = false);
 	static Texture* get(const std::string& name);
+	const std::array<int, 5>& getSize() const { return size; }
+	std::string getName() const { return name; }
 	static std::array<int, 5> getSize(const std::string& name);
 	static void destroy(const std::string& name);
 	static void destroy();

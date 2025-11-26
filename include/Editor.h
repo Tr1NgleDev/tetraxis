@@ -4,20 +4,27 @@
 #include <Shader.h>
 #include <Texture.h>
 #include <QuadRenderer.h>
-//#include <qsvgrenderer.h>
+#include <TexRenderer.h>
+#include <Framebuffer.h>
+#include <Mesh.h>
+#include <MeshRenderer.h>
+#include <Math4D.h>
 
 class Editor
 {
 private:
-	Shader* testShader;
-	Texture* tex;
-	//Texture svgTex;
-	//QSvgRenderer svgRenderer{};
+	Framebuffer fb;
+	glm::mat4 projection2D;
+	glm::mat4 projection3D;
+
+	Shader* meshShader;
+	Mesh mesh;
+	MeshRenderer meshRenderer;
 
 public:
 	Editor(int argc, const char* argv[]);
 	
-	void initRender(GLFWwindow* window);
+	void init(GLFWwindow* window);
 
 	void updateSize(GLFWwindow* window);
 	void update(GLFWwindow* window, double dt);

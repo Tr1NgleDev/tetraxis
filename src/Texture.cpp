@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include <Texture.h>
 
 #define NDTF_GL_HELPER_FUNCTIONS
@@ -95,6 +94,9 @@ bool Texture::init(const void* data, Texture::Format format, int w, bool linearF
 	glTextureParameteri(ID, GL_TEXTURE_MAG_FILTER, linearFilter ? GL_LINEAR : GL_NEAREST);
 	glTextureParameteri(ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
+	size =
+	{ w, 1, 1, 1, 1 };
+
 	return ID;
 }
 // 2D
@@ -121,6 +123,9 @@ bool Texture::init(const void* data, Texture::Format format, int w, int h, bool 
 	glTextureParameteri(ID, GL_TEXTURE_MAG_FILTER, linearFilter ? GL_LINEAR : GL_NEAREST);
 	glTextureParameteri(ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	size =
+	{ w, h, 1, 1, 1 };
 
 	return ID;
 }
@@ -149,6 +154,9 @@ bool Texture::init(const void* data, Texture::Format format, int w, int h, int d
 	glTextureParameteri(ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(ID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	
+	size =
+	{ w, h, d, 1, 1 };
 
 	return ID;
 }
@@ -195,6 +203,9 @@ bool Texture::initArray(const void* data, Texture::Format format, int w, int h, 
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 	}
+
+	size =
+	{ w / cols, h / rows, cols, rows, 1 };
 
 	return ID;
 }
@@ -321,27 +332,31 @@ const std::unordered_map<Texture::ChannelsFormat, Texture::Format> Texture::form
 };
 
 std::unordered_map<std::string, Texture*> Texture::textures{};
-std::unordered_map<std::string, std::array<int, 5>> Texture::textureSizes{};
 
 bool Texture::load(const std::string& path, uint8_t desiredChannels, bool linearFilter, const std::string& _name, bool reload)
 {
 	std::string name = _name;
 	if (name.empty()) name = path;
 
+	Texture* tex = nullptr;
 	if (textures.contains(name))
 	{
 		if (reload)
 		{
-			destroy(name);
+			//destroy(name);
+			tex = textures[name];
+			if (tex && tex->ID)
+			{
+				glDeleteTextures(1, &tex->ID);
+				tex->ID = 0;
+				tex->target = 0;
+			}
 		}
 		else
 		{
 			return false;
 		}
 	}
-
-	assert(!textures.contains(name));
-	assert(!textureSizes.contains(name));
 
 	NDTF_File ndtf = ndtf_file_load(path.c_str(), nullptr, NDTF_TEXELFORMAT_NONE);
 	if (ndtf_file_isValid(&ndtf)) // load the ndtf
@@ -376,7 +391,8 @@ bool Texture::load(const std::string& path, uint8_t desiredChannels, bool linear
 			}
 		}
 
-		Texture* tex = new Texture();
+		if (!tex)
+			tex = new Texture();
 		if (ndtf.header.dimensions == NDTF_DIMENSIONS_TWO)
 		{
 			if (!tex->init(
@@ -419,9 +435,10 @@ bool Texture::load(const std::string& path, uint8_t desiredChannels, bool linear
 			}
 		}
 
-		textures[name] = tex;
-		textureSizes[name] =
+		tex->size =
 			{ (int)ndtf.header.width, (int)ndtf.header.height, (int)ndtf.header.depth, (int)ndtf.header.ind, (int)ndtf.header.ind2 };
+
+		textures[name] = tex;
 
 		ndtf_file_free(&ndtf);
 		return true;
@@ -429,7 +446,6 @@ bool Texture::load(const std::string& path, uint8_t desiredChannels, bool linear
 	else // use stb_image
 	{
 		int w, h, c;
-		stbi_set_flip_vertically_on_load(true);
 		uint8_t* data = stbi_load(path.c_str(), &w, &h, &c, desiredChannels);
 
 		if (!data)
@@ -437,7 +453,8 @@ bool Texture::load(const std::string& path, uint8_t desiredChannels, bool linear
 			return false;
 		}
 
-		Texture* tex = new Texture();
+		if (!tex)
+			tex = new Texture();
 		if (!tex->init(
 			data,
 			desiredChannels ? desiredChannels : c,
@@ -451,9 +468,10 @@ bool Texture::load(const std::string& path, uint8_t desiredChannels, bool linear
 			return false;
 		}
 
-		textures[name] = tex;
-		textureSizes[name] =
+		tex->size =
 		{ w, h, 1, 1, 1 };
+
+		textures[name] = tex;
 
 		stbi_image_free(data);
 		return true;
@@ -467,11 +485,19 @@ bool Texture::loadArray(const std::string& path, int cols, int rows, uint8_t des
 	std::string name = _name;
 	if (name.empty()) name = path;
 
+	Texture* tex = nullptr;
 	if (textures.contains(name))
 	{
 		if (reload)
 		{
-			destroy(name);
+			//destroy(name);
+			tex = textures[name];
+			if (tex && tex->ID)
+			{
+				glDeleteTextures(1, &tex->ID);
+				tex->ID = 0;
+				tex->target = 0;
+			}
 		}
 		else
 		{
@@ -479,11 +505,7 @@ bool Texture::loadArray(const std::string& path, int cols, int rows, uint8_t des
 		}
 	}
 
-	assert(!textures.contains(name));
-	assert(!textureSizes.contains(name));
-
 	int w, h, c;
-	stbi_set_flip_vertically_on_load(true);
 	uint8_t* data = stbi_load(path.c_str(), &w, &h, &c, desiredChannels);
 
 	if (!data)
@@ -491,7 +513,8 @@ bool Texture::loadArray(const std::string& path, int cols, int rows, uint8_t des
 		return false;
 	}
 
-	Texture* tex = new Texture();
+	if (!tex)
+		tex = new Texture();
 	if (!tex->initArray(
 		data,
 		desiredChannels ? desiredChannels : c,
@@ -507,9 +530,10 @@ bool Texture::loadArray(const std::string& path, int cols, int rows, uint8_t des
 		return false;
 	}
 
-	textures[name] = tex;
-	textureSizes[name] =
+	tex->size =
 	{ w / cols, h / rows, cols, rows, 1 };
+
+	textures[name] = tex;
 
 	stbi_image_free(data);
 	return true;
@@ -518,7 +542,6 @@ bool Texture::loadArray(const std::string& path, int cols, int rows, uint8_t des
 Texture* Texture::get(const std::string& name)
 {
 	if (!textures.contains(name)) return nullptr;
-	assert(textureSizes.contains(name));
 
 	return textures.at(name);
 }
@@ -526,19 +549,16 @@ Texture* Texture::get(const std::string& name)
 std::array<int, 5> Texture::getSize(const std::string& name)
 {
 	if (!textures.contains(name)) return { 1, 1, 1, 1, 1 };
-	assert(textureSizes.contains(name));
 
-	return textureSizes.at(name);
+	return textures.at(name)->getSize();
 }
 
 void Texture::destroy(const std::string& name)
 {
 	if (!textures.contains(name)) return;
-	assert(textureSizes.contains(name));
 
 	delete textures.at(name);
 	textures.erase(name);
-	textureSizes.erase(name);
 }
 
 void Texture::destroy()
@@ -546,5 +566,4 @@ void Texture::destroy()
 	for (auto& tex : textures)
 		delete tex.second;
 	textures.clear();
-	textureSizes.clear();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <basicIncludes.h>
+#include <Math4D.h>
 
 class Shader
 {
@@ -74,9 +75,9 @@ public:
 	void setUniform(int loc, const glm::mat4x2& v, bool transpose = false) const;
 	void setUniform(int loc, const glm::mat3x4& v, bool transpose = false) const;
 	void setUniform(int loc, const glm::mat4x3& v, bool transpose = false) const;
-	//void setUniform(int loc, const m4::Mat5& v) const;
-	//void setUniform(int loc, const m4::BiVector4& v) const;
-	//void setUniform(int loc, const m4::vec5& v) const;
+	void setUniform(int loc, const m4::Mat5& v) const;
+	void setUniform(int loc, const m4::BiVector4& v) const;
+	void setUniform(int loc, const m4::vec5& v) const;
 
 	void setUniform(const std::string& name, int count, const float* v) const
 	{
@@ -214,16 +215,16 @@ public:
 	{
 		setUniform(getUniformLocation(name), v, transpose);
 	}
-	//void setUniform(const std::string& name, const m4::Mat5& v) const
-	//{
-	//	setUniform(getUniformLocation(name), v);
-	//}
-	//void setUniform(const std::string& name, const m4::BiVector4& v) const
-	//{
-	//	setUniform(getUniformLocation(name), v);
-	//}
-	//void setUniform(const std::string& name, const m4::vec5& v) const
-	//{
-	//	setUniform(getUniformLocation(name), v);
-	//}
+	void setUniform(const std::string& name, const m4::Mat5& v) const
+	{
+		setUniform(getUniformLocation(name), v);
+	}
+	void setUniform(const std::string& name, const m4::BiVector4& v) const
+	{
+		setUniform(getUniformLocation(name), v);
+	}
+	void setUniform(const std::string& name, const m4::vec5& v) const
+	{
+		setUniform(getUniformLocation(name), v);
+	}
 };

@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(Tetraxis)
 
-add_subdirectory("libs/ndtf")
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -31,13 +29,13 @@ target_link_libraries(tetraxis PRIVATE GLEW::GLEW)
 
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(tetraxis PRIVATE glm::glm-header-only)
+target_compile_definitions(tetraxis PRIVATE GLM_EXPERIMENTAL)
 
-#find_package(Qt6Svg CONFIG REQUIRED)
-#target_link_libraries(tetraxis PRIVATE Qt6::Svg Qt6::SvgPrivate)
-
+add_subdirectory("libs/ndtf")
 target_link_libraries(tetraxis PRIVATE ndtf)
 
-target_compile_definitions(tetraxis PRIVATE GLM_EXPERIMENTAL)
+add_subdirectory("libs/libresvg")
+target_link_libraries(tetraxis PRIVATE resvg)
 
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -46,16 +44,15 @@ endif()
 if(WIN32)
 	install(IMPORTED_RUNTIME_ARTIFACTS glfw DESTINATION .)
 	install(IMPORTED_RUNTIME_ARTIFACTS GLEW::GLEW DESTINATION .)
-	install(IMPORTED_RUNTIME_ARTIFACTS GLEW::GLEW DESTINATION .)
-#	install(IMPORTED_RUNTIME_ARTIFACTS Qt6::Svg DESTINATION .)
-#	install(IMPORTED_RUNTIME_ARTIFACTS Qt6::Core DESTINATION .)
+	install(IMPORTED_RUNTIME_ARTIFACTS resvg DESTINATION .)
 
 	install(TARGETS tetraxis RUNTIME DESTINATION .)
 
 	install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets DESTINATION .)
 
-	install(FILES ${CMAKE_SOURCE_DIR}/icons/icon.ico DESTINATION .)
 elseif(LINUX)
+	install(IMPORTED_RUNTIME_ARTIFACTS resvg DESTINATION .)
+
 	install(TARGETS tetraxis RUNTIME DESTINATION lib/tetraxis RENAME tetraxis)
 	install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets DESTINATION lib/tetraxis)
 	

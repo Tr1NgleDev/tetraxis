@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include <File.h>
 #include <Shader.h>
 
@@ -287,170 +286,216 @@ void Shader::destroy()
 void Shader::setUniform(int loc, int count, const float* v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1fv(ID, loc, count, v);
 }
 void Shader::setUniform(int loc, float v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1f(ID, loc, v);
 }
 void Shader::setUniform(int loc, const glm::vec2& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform2fv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, const glm::vec3& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform3fv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, const glm::vec4& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform4fv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, bool v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1i(ID, loc, v);
 }
 void Shader::setUniform(int loc, int count, const int* v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1iv(ID, loc, count, v);
 }
 void Shader::setUniform(int loc, int v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1i(ID, loc, v);
 }
 void Shader::setUniform(int loc, const glm::ivec2& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform2iv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, const glm::ivec3& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform3iv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, const glm::ivec4& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform4iv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, int count, const uint32_t* v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1uiv(ID, loc, count, v);
 }
 void Shader::setUniform(int loc, uint32_t v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform1ui(ID, loc, v);
 }
 void Shader::setUniform(int loc, const glm::uvec2& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform2uiv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, const glm::uvec3& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform3uiv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, const glm::uvec4& v) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform4uiv(ID, loc, 1, &v[0]);
 }
 void Shader::setUniform(int loc, float x, float y) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform2f(ID, loc, x, y);
 }
 void Shader::setUniform(int loc, float x, float y, float z) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform3f(ID, loc, x, y, z);
 }
 void Shader::setUniform(int loc, float x, float y, float z, float w) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform4f(ID, loc, x, y, z, w);
 }
 void Shader::setUniform(int loc, int x, int y) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform2i(ID, loc, x, y);
 }
 void Shader::setUniform(int loc, int x, int y, int z) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform3i(ID, loc, x, y, z);
 }
 void Shader::setUniform(int loc, int x, int y, int z, int w) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform4i(ID, loc, x, y, z, w);
 }
 void Shader::setUniform(int loc, uint32_t x, uint32_t y) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform2ui(ID, loc, x, y);
 }
 void Shader::setUniform(int loc, uint32_t x, uint32_t y, uint32_t z) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform3ui(ID, loc, x, y, z);
 }
 void Shader::setUniform(int loc, uint32_t x, uint32_t y, uint32_t z, uint32_t w) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniform4ui(ID, loc, x, y, z, w);
 }
 void Shader::setUniform(int loc, const glm::mat2& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix2fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat3& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix3fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat4& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix4fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat2x3& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix2x3fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat3x2& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix3x2fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat2x4& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix2x4fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat4x2& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix4x2fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat3x4& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix3x4fv(ID, loc, 1, transpose, &v[0][0]);
 }
 void Shader::setUniform(int loc, const glm::mat4x3& v, bool transpose) const
 {
 	if (!ID) return;
+	if (loc <= -1) return;
 	glProgramUniformMatrix4x3fv(ID, loc, 1, transpose, &v[0][0]);
+}
+void Shader::setUniform(int loc, const m4::Mat5& v) const
+{
+	setUniform(loc, sizeof(m4::Mat5) / sizeof(float), &v[0][0]);
+}
+void Shader::setUniform(int loc, const m4::BiVector4& v) const
+{
+	setUniform(loc, sizeof(m4::BiVector4) / sizeof(float), &v[0]);
+}
+void Shader::setUniform(int loc, const m4::vec5& v) const
+{
+	setUniform(loc, sizeof(m4::vec5) / sizeof(float), &v[0]);
 }
