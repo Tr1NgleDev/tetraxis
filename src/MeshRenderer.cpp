@@ -205,7 +205,6 @@ void MeshRenderer::initAttrs(const IMesh* mesh)
 
 		int attrCount = mesh->attrCount(i);
 
-		int bufferOffset = 0;
 		for (int j = 0; j < attrCount; ++j)
 		{
 			size_t size = mesh->attrSize(i, j);
